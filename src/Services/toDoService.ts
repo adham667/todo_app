@@ -1,21 +1,14 @@
-import {task} from '../Types/taskTypes'
-import { userexist } from './userService';
-let tasks:task[]=[
-    {
-        id:1,
-        title:"first",
-        description:"hard",
-        UserId:1
-    }
-];
+import toDo from "../Models/toDo"
+import mongoose from "mongoose";
+import User from "../Models/user";
+import { tasktype } from "../Types/taskTypes";
 
-const addTask=async(task:task)=>{
+const addTask=async(task:tasktype)=>{
     return new Promise((reslove, reject)=>{
-        setTimeout(() => {
-            const id=+task.UserId;
-            if(userexist(id)){
-                tasks.push(task);
-                reslove("task added successfully")
+        setTimeout(async() => {
+            if(await User.exists(task.UserId)){
+                toDo.create(task);
+                reslove("task added successfully");
             }
             else{
                 reject(new Error("user doesn't exist"))
@@ -24,26 +17,29 @@ const addTask=async(task:task)=>{
     })
 }
 
-const getUserTask=async(UserId:number)=>{
+const getUserTask=async(UserId:String)=>{
     return new Promise((resolve, reject)=>{
         setTimeout(async() => {
-            if(userexist(UserId)){
-                let usertasks:task[]=[];
-                for(let i=0;i<tasks.length;i++){
-                    if(tasks[i].UserId==UserId){
-                        usertasks.push(tasks[i]);
-                    }
+            try {
+                const userExists = await User.exists({ _id: UserId });
+
+                if (userExists) {
+                    const userTasks = await toDo.find({
+                        user: UserId
+                    });
+                    resolve(userTasks);
+                } else {
+                    reject(new Error("User doesn't exist"));
                 }
-                resolve(usertasks);
-            }
-            else{
-                reject(new Error("user doesn't exist"));
+            } catch (error) {
+                reject(error);
             }
         }, 2000);
     })
 }
 
 const getAllTasks=()=>{
+    const tasks = toDo.find();
     return tasks;
 }
 

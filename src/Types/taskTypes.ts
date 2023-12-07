@@ -1,6 +1,5 @@
-export type task={
-    id:number,
+export type tasktype={
     title:string,
     description:string,
-    UserId:number
+    UserId:String
 };

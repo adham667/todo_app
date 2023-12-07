@@ -15,3 +15,7 @@ const toDoschema = new mongoose.Schema({
         ref:"User"
     }
 })
+
+const toDo = mongoose.model('toDo', toDoschema);
+
+export default toDo;

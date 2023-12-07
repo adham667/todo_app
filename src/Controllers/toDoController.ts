@@ -1,6 +1,6 @@
-import{Request, Response} from "express"
+import {Request, Response} from "express"
 import {addTask, getAllTasks, getUserTask} from '../Services/toDoService'
-import { task } from "../Types/taskTypes"
+import { tasktype } from "../Types/taskTypes"
 
 const getAllTasksController=(req:Request, res:Response)=>{
     const tasks = getAllTasks();
@@ -8,29 +8,28 @@ const getAllTasksController=(req:Request, res:Response)=>{
     res.json(tasks);
 }
 
-const getUserTaskContorller=(req:Request, res:Response)=>{
-    const userID = +req.params.userID;
-    getUserTask(userID)
-    .then((task)=>{
-        res.json(task);
-    })
-    .catch((err)=>{
-        res.status(400).json(err.message);
-    })
+const getUserTaskContorller=async(req:Request, res:Response)=>{
+    try{
+        const userID = req.params.userID;
+    const tasks =await getUserTask(userID)
+    if(tasks){
+        res.json({Data:tasks})
+    }
+    else{
+        res.status(404).json({message:"user not found"});
+    }
+    }
+    catch (err) {
+        console.error('Error in getUserController:', err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 }
 
 const addTaskController=(req:Request, res:Response)=>{
-    const task = req.body as task;
+    const task = req.body as tasktype;
 
-    addTask(task)
-    .then((msg)=>{
-    })
-    .catch((err)=>{
-        console.error(err);
-    })
-    
-
-    res.end()
+    const addedtask = addTask(task);
+    res.status(201).json({ message: "Success"});
 }
 
 

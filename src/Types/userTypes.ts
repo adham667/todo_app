@@ -1,6 +1,5 @@
-export type user={
-    id:number,
+export type usertype={
     name:string,
-    PhoneNo:string,
-    Age:number
+    Email:String,
+    PhoneNo:string
 };

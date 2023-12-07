@@ -8,43 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserTask = exports.getAllTasks = exports.addTask = void 0;
-const userService_1 = require("./userService");
-let tasks = [
-    {
-        id: 1,
-        title: "first",
-        description: "hard",
-        UserId: 1
-    }
-];
+const toDo_1 = __importDefault(require("../Models/toDo"));
+const user_1 = __importDefault(require("../Models/user"));
 const addTask = (task) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((reslove, reject) => {
-        setTimeout(() => {
-            const id = +task.UserId;
-            if ((0, userService_1.userexist)(id)) {
-                tasks.push(task);
-                reslove("task added successfully");
-            }
-            else {
-                reject(new Error("user doesn't exist"));
-            }
-        }, 2000);
-    });
-});
-exports.addTask = addTask;
-const getUserTask = (UserId) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => {
         setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
-            if ((0, userService_1.userexist)(UserId)) {
-                let usertasks = [];
-                for (let i = 0; i < tasks.length; i++) {
-                    if (tasks[i].UserId == UserId) {
-                        usertasks.push(tasks[i]);
-                    }
-                }
-                resolve(usertasks);
+            if (yield user_1.default.exists(task.UserId)) {
+                toDo_1.default.create(task);
+                reslove("task added successfully");
             }
             else {
                 reject(new Error("user doesn't exist"));
@@ -52,8 +28,31 @@ const getUserTask = (UserId) => __awaiter(void 0, void 0, void 0, function* () {
         }), 2000);
     });
 });
+exports.addTask = addTask;
+const getUserTask = (UserId) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const userExists = yield user_1.default.exists({ _id: UserId });
+                if (userExists) {
+                    const userTasks = yield toDo_1.default.find({
+                        user: UserId
+                    });
+                    resolve(userTasks);
+                }
+                else {
+                    reject(new Error("User doesn't exist"));
+                }
+            }
+            catch (error) {
+                reject(error);
+            }
+        }), 2000);
+    });
+});
 exports.getUserTask = getUserTask;
 const getAllTasks = () => {
+    const tasks = toDo_1.default.find();
     return tasks;
 };
 exports.getAllTasks = getAllTasks;

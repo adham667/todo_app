@@ -1,52 +1,28 @@
-import {user} from '../Types/userTypes'
+import { Response, Request } from "express";
+import User from "../Models/user";
+import { ObjectId } from "mongoose";
+import {usertype} from "../Types/userTypes";
 
-let users:user[]= [
-    {
-        id:1,
-        name:"adsd",
-        PhoneNo:"112321",
-        Age:20
-    },
-    {
-        id:2,
-        name:"dvvvd",
-        PhoneNo:"10101010",
-        Age:201
+const AddUser = async (user: usertype) => {
+    try {
+        const addedUser = await User.create(user);
+        return addedUser;
+    } catch (error) {
+        console.error('Error adding user:', error);
+        throw error; // Propagate the error so it can be handled by the caller
     }
-];
+};
 
-const AddUser= (u:user)=>{
-    users.push(u);
-}
 
-const getAllusers=()=>{
+const getAllusers=async()=>{
+    const users = await User.find();
     return users;
 }
 
-const getUser= async (id:number)=>{
-    return new Promise((resolve, reject)=>{
-        setTimeout(() => {
-            if(userexist(id)){
-                for(let i=0;i<users.length;i++){
-                    if(users[i].id===id){
-                        resolve(users[i]);
-                    }
-                }
-            }
-            else{
-                reject(new Error("user doesn't exist"));    
-            }
-        }, 2000);
-    })
-}
+const getUser = async (filter:String) => {
+    return await User.findById(filter).exec();
+};
 
-const userexist=(id:number)=>{
-    for(let i=0;i<users.length;i++){
-        if(users[i].id==id){
-            return 1;
-        }
-    }
-    return 0;
-}
 
-export {getAllusers, getUser, AddUser, userexist};
+
+export {getAllusers, getUser, AddUser};

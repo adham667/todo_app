@@ -8,53 +8,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userexist = exports.AddUser = exports.getUser = exports.getAllusers = void 0;
-let users = [
-    {
-        id: 1,
-        name: "adsd",
-        PhoneNo: "112321",
-        Age: 20
-    },
-    {
-        id: 2,
-        name: "dvvvd",
-        PhoneNo: "10101010",
-        Age: 201
+exports.AddUser = exports.getUser = exports.getAllusers = void 0;
+const user_1 = __importDefault(require("../Models/user"));
+const AddUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const addedUser = yield user_1.default.create(user);
+        return addedUser;
     }
-];
-const AddUser = (u) => {
-    users.push(u);
-};
+    catch (error) {
+        console.error('Error adding user:', error);
+        throw error; // Propagate the error so it can be handled by the caller
+    }
+});
 exports.AddUser = AddUser;
-const getAllusers = () => {
+const getAllusers = () => __awaiter(void 0, void 0, void 0, function* () {
+    const users = yield user_1.default.find();
     return users;
-};
+});
 exports.getAllusers = getAllusers;
-const getUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (userexist(id)) {
-                for (let i = 0; i < users.length; i++) {
-                    if (users[i].id === id) {
-                        resolve(users[i]);
-                    }
-                }
-            }
-            else {
-                reject(new Error("user doesn't exist"));
-            }
-        }, 2000);
-    });
+const getUser = (filter) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield user_1.default.findById(filter).exec();
 });
 exports.getUser = getUser;
-const userexist = (id) => {
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].id == id) {
-            return 1;
-        }
-    }
-    return 0;
-};
-exports.userexist = userexist;
